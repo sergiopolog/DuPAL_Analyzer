@@ -20,6 +20,11 @@ public class PAL12H6Specs implements PALSpecs {
     }
 
     @Override
+    public boolean isVariable() {
+        return false;
+    }
+
+    @Override
     public int getMask_CLK() {
         return 0x00;
     }
@@ -113,4 +118,14 @@ public class PAL12H6Specs implements PALSpecs {
     public int slotNumber() {
         return 0;
     }
+
+	@Override
+	public boolean isDiscardFeedbacks() {
+		return false;
+	}
+
+	@Override
+	public int getIoAsOutMask() {
+		return 0x00;
+	}
 }

@@ -12,7 +12,19 @@ public class BitUtils {
 
         return tot;
     }
-    
+
+	static public int getLowestSignificantBitSetPosition(int num) {
+		int pos = 0;
+		for (int i = 0; i < Integer.SIZE; i++) {
+			if ((num & (1 << i)) == 0) {
+				pos++;
+			} else {
+				break;
+			}
+		}
+		return pos;
+	}
+
     static public int consolidateBitField(int field, int mask) {
         int data = 0;
         int shift = 0;

@@ -24,8 +24,12 @@ public class App {
                                                 PAL16R8Specs.PAL_TYPE,
                                                 PAL20R4Specs.PAL_TYPE,
                                                 PAL20R6Specs.PAL_TYPE,
-                                                PAL20R8Specs.PAL_TYPE 
-                                            };
+                                                PAL20R8Specs.PAL_TYPE,
+
+                                                // Variable devices
+                                                PAL16V8Specs.PAL_TYPE,
+                                                PAL20V8Specs.PAL_TYPE
+                                           };
 
     private final static Logger logger = LoggerFactory.getLogger(App.class);
 
@@ -47,7 +51,7 @@ public class App {
             }
 
             logger.error("Wrong number of arguments passed.\n"
-                    + "dupal_analyzer <serial_port> <pal_type> [<output_file> hex_output_mask]\n"
+                    + "dupal_analyzer <serial_port> <pal_type> [<output_file> hex_output_mask discard_feedbacks hex_registered_output_mask]\n"
                     + "Where <pal_type> can be:\n" + supportedPALs.toString() + "\n");
 
             return;
@@ -77,20 +81,44 @@ public class App {
     private static void parseArgs(String[] args) {
         serialDevice = args[0];
 
+        int ioAsROutMask = 0;
+		if (args.length >= 6) {
+			ioAsROutMask = Integer.parseInt(args[5], 16);
+		}
+
+		boolean discardFeedbacks = false;
+		if (args.length >= 5) {
+			discardFeedbacks = Boolean.parseBoolean(args[4]) || "y".equals(args[4]) || "yes".equals(args[4]);
+		}
+	
+		if (args.length >= 4) {
+			outMask = Integer.parseInt(args[3], 16) ^ ioAsROutMask;
+		}
+
+		if (args.length >= 3) {
+			outFile = args[2];
+			checkOutPath(outFile);
+		}
+
         try {
             Class<?> specsClass = Class.forName("info.hkzlab.dupal.analyzer.devices.PAL" + args[1].toUpperCase() + "Specs");
-            pspecs = (PALSpecs) specsClass.getConstructor().newInstance(new Object[]{});
+            if (discardFeedbacks) {
+	            if (ioAsROutMask == 0) {
+	            	pspecs = (PALSpecs) specsClass.getConstructor(Integer.class).newInstance(outMask);
+	            } else {
+	            	pspecs = (PALSpecs) specsClass.getConstructor(Integer.class, Integer.class).newInstance(outMask, ioAsROutMask);
+	            }
+            } else {
+	            if (ioAsROutMask == 0) {
+	            	pspecs = (PALSpecs) specsClass.getConstructor().newInstance(new Object[]{});
+	            } else {
+	            	pspecs = (PALSpecs) specsClass.getConstructor(Integer.class, Integer.class).newInstance(null, ioAsROutMask);
+	            }
+            }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             logger.error("Invalid PAL type selected.");
             System.exit(-1);
-        }
-
-        if(args.length >= 4) {
-            outFile = args[2];
-            outMask = Integer.parseInt(args[3], 16);
-            
-            checkOutPath(outFile);
         }
     }
 

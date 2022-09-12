@@ -74,7 +74,12 @@ public class JSONFormatter {
 
         palDetails.put("type", pSpecs.toString());
         if(pSpecs.getPinCount_IO() > 0) palDetails.put("IOsAsOUT", ioAsOutMask);
-        
+        if(pSpecs.isVariable() && pSpecs.getPinCount_RO() > 0) palDetails.put("IOsAsROUT", pSpecs.getMask_RO_R());
+        if(pSpecs.isDiscardFeedbacks()) {
+        	palDetails.put("DiscardFeedbacks", Boolean.TRUE);
+        	palDetails.put("IOsAsOUT", pSpecs.getIoAsOutMask());
+        }
+
         header.put("revision", JSON_FORMAT_REVISION);
         header.put("analyzerProgram", "DuPAL Analyzer");
         header.put("analyzerVersion", JSONFormatter.class.getPackage().getImplementationVersion());

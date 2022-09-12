@@ -23,6 +23,10 @@ public interface PALSpecs {
 
     public boolean isActiveLow();
 
+    public boolean isDiscardFeedbacks();
+    public int getIoAsOutMask();
+    public boolean isVariable();
+
     public int minimumBoardRev();
 
     public int slotNumber();

@@ -1,6 +1,6 @@
 package info.hkzlab.dupal.analyzer.devices;
 
-public class PAL16L8Specs implements PALSpecs {
+public class PAL16L8Specs extends AbstractPALFeedbackSpecs implements PALSpecs {
 
     public static final String PAL_TYPE = "16L8";
 
@@ -8,6 +8,14 @@ public class PAL16L8Specs implements PALSpecs {
     private static final String[] LABELS_IN =  {  "i1",  "i2",  "i3",  "i4",  "i5",  "i6",  "i7",  "i8",  "i9", "i11",   null,   null,   null,   null,   null,   null,   null,   null };
     private static final String[] LABELS_IO =  {  null,  null,  null,  null,  null,  null,  null,  null,  null,  null, "io18", "io17", "io16", "io15", "io14", "io13",   null,   null };
     private static final String[] LABELS_O  = {  null,  null,  null,  null,  null,  null,  null,  null,  null,  null,   null,   null,   null,   null,   null,   null,  "o19",  "o12" };
+
+	public PAL16L8Specs() {
+		super(null);
+	}
+
+	public PAL16L8Specs(Integer ioAsOutputMask) {
+		super(ioAsOutputMask);
+	}
 
     @Override
     public String toString() {
@@ -30,17 +38,17 @@ public class PAL16L8Specs implements PALSpecs {
     }
 
     @Override
-    public int getMask_IN() {
+    public int getMask_IN_initial() {
         return 0x3FF;
     }
 
     @Override
-    public int getMask_IO_R() {
+    public int getMask_IO_R_initial() {
         return 0x3F;
     }
 
     @Override
-    public int getMask_IO_W() {
+    public int getMask_IO_W_initial() {
         return 0xFC00;
     }
 
@@ -55,12 +63,12 @@ public class PAL16L8Specs implements PALSpecs {
     }
 
     @Override
-    public int getMask_O_R() {
+    public int getMask_O_R_initial() {
         return 0xC0;
     }
 
     @Override
-    public int getMask_O_W() {
+    public int getMask_O_W_initial() {
         return 0x30000;
     }
 
@@ -71,37 +79,17 @@ public class PAL16L8Specs implements PALSpecs {
 
     @Override
     public String[] getLabels_O() {
-        return LABELS_O;
+        return this.getLabels_O_internal(LABELS_O, LABELS_IO);
     }
 
     @Override
     public String[] getLabels_IO() {
-        return LABELS_IO;
+        return this.getLabels_IO_internal(LABELS_IO);
     }
 
     @Override
     public String[] getLabels_IN() {
-        return LABELS_IN;
-    }
-
-    @Override
-    public int getPinCount_IN() {
-        return 10;
-    }
-
-    @Override
-    public int getPinCount_IO() {
-        return 6;
-    }
-
-    @Override
-    public int getPinCount_O() {
-        return 2;
-    }
-
-    @Override
-    public int getPinCount_RO() {
-        return 0;
+        return this.getLabels_IN_internal(LABELS_IN, LABELS_IO);
     }
 
     @Override
